@@ -1,0 +1,45 @@
+{
+  "activation": "threshold",
+  "search_interval": [
+    -10.0,
+    10.0
+  ],
+  "target_solutions": 3,
+  "max_attempts": 1000000,
+  "seed": 2026,
+  "results": [
+    {
+      "index": 1,
+      "attempts_needed": 26,
+      "correct_count": 30,
+      "total_count": 30,
+      "parameters": {
+        "w1": 2.4187093040009895,
+        "w2": -6.794513746638604,
+        "b": 8.941241666233253
+      }
+    },
+    {
+      "index": 2,
+      "attempts_needed": 68,
+      "correct_count": 30,
+      "total_count": 30,
+      "parameters": {
+        "w1": 3.041962337319088,
+        "w2": -5.87154639874377,
+        "b": 4.888837811878322
+      }
+    },
+    {
+      "index": 3,
+      "attempts_needed": 121,
+      "correct_count": 30,
+      "total_count": 30,
+      "parameters": {
+        "w1": 3.152935200159547,
+        "w2": -6.661732824290489,
+        "b": 5.540980414084993
+      }
+    }
+  ]
+}
