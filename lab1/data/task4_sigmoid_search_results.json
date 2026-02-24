@@ -1,0 +1,45 @@
+{
+  "activation": "sigmoid",
+  "search_interval": [
+    -10.0,
+    10.0
+  ],
+  "target_solutions": 3,
+  "max_attempts": 1000000,
+  "seed": 2027,
+  "results": [
+    {
+      "index": 1,
+      "attempts_needed": 67,
+      "correct_count": 30,
+      "total_count": 30,
+      "parameters": {
+        "w1": 3.1283242562651576,
+        "w2": -7.435747602390892,
+        "b": 5.638242431273428
+      }
+    },
+    {
+      "index": 2,
+      "attempts_needed": 72,
+      "correct_count": 30,
+      "total_count": 30,
+      "parameters": {
+        "w1": 3.6731582632747326,
+        "w2": -8.512839601018944,
+        "b": 5.778314562400375
+      }
+    },
+    {
+      "index": 3,
+      "attempts_needed": 102,
+      "correct_count": 30,
+      "total_count": 30,
+      "parameters": {
+        "w1": 0.9766908234280329,
+        "w2": -3.831975925647855,
+        "b": 4.894421736459979
+      }
+    }
+  ]
+}
