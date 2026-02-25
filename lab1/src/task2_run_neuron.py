@@ -1,4 +1,6 @@
-﻿from __future__ import annotations
+"""Run Task 2 neuron evaluation on the generated dataset with a chosen activation function."""
+
+from __future__ import annotations
 
 import argparse
 from pathlib import Path
@@ -14,6 +16,7 @@ from artificial_neuron import (
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for Task 2 neuron evaluation."""
     parser = argparse.ArgumentParser(
         description="Task 2: evaluate generated data with an artificial neuron."
     )
@@ -27,6 +30,8 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """Evaluate Task 1 data with the artificial neuron and save Task 2 CSV outputs."""
+    # pajungia skripta su parinkta funkcija pagal --activation argumenta
     args = parse_args()
     activation = ActivationType(args.activation)
 
@@ -36,9 +41,11 @@ def main() -> None:
     output_path = lab_root / "data" / f"task2_outputs_{activation.value}.csv"
 
     records = load_dataset(dataset_path)
+    # naudojame 1 punkto metadata, kaip gerus parametrus
     parameters = load_parameters_from_metadata(metadata_path)
     neuron = ArtificialNeuron(parameters=parameters, activation=activation)
 
+    # vertinu irasa ir issaugau
     outputs = [neuron.evaluate(record.x1, record.x2) for record in records]
     save_evaluation_results(output_path, records, outputs)
 

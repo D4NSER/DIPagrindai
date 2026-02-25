@@ -1,4 +1,6 @@
-﻿from __future__ import annotations
+"""Plot Task 5-6 outputs: data points, separating lines, and weight vectors."""
+
+from __future__ import annotations
 
 import json
 from dataclasses import dataclass
@@ -12,11 +14,14 @@ from artificial_neuron import NeuronParameters, load_dataset, project_lab_root
 
 @dataclass(frozen=True)
 class ThresholdSolution:
+    """One threshold-search solution used to plot a line and its weight vector."""
+
     index: int
     parameters: NeuronParameters
 
 
 def load_threshold_solutions(json_path: Path) -> list[ThresholdSolution]:
+    """Load Task 3 threshold solutions from JSON into typed objects."""
     payload = json.loads(json_path.read_text(encoding="utf-8"))
     solutions: list[ThresholdSolution] = []
     for item in payload["results"]:
@@ -32,7 +37,9 @@ def load_threshold_solutions(json_path: Path) -> list[ThresholdSolution]:
     return solutions
 
 
+# vektoriaus pradziai pasirenkame taska ant tieses (negali but (0,0)), kad atsispindetu poslinkis.
 def closest_point_on_line_to_origin(parameters: NeuronParameters) -> np.ndarray:
+    """Compute the point on the separating line that is closest to the origin."""
     w = np.array([parameters.w1, parameters.w2], dtype=float)
     norm_sq = float(np.dot(w, w))
     if norm_sq == 0.0:
@@ -43,9 +50,11 @@ def closest_point_on_line_to_origin(parameters: NeuronParameters) -> np.ndarray:
 def line_points_for_plot(
     parameters: NeuronParameters, x_limits: tuple[float, float]
 ) -> tuple[np.ndarray, np.ndarray]:
+    """Generate XY coordinates for plotting a separating line."""
     w1, w2, b = parameters.w1, parameters.w2, parameters.b
     x_values = np.linspace(x_limits[0], x_limits[1], 200)
 
+    # istraukiu y is a lygties
     if abs(w2) > 1e-9:
         y_values = -(w1 * x_values + b) / w2
         return x_values, y_values
@@ -61,6 +70,7 @@ def choose_vector_scale(
     x_limits: tuple[float, float],
     y_limits: tuple[float, float],
 ) -> float:
+    """Choose a readable vector length based on current plot dimensions."""
     diagonal = float(np.hypot(x_limits[1] - x_limits[0], y_limits[1] - y_limits[0]))
     return 0.12 * diagonal
 
@@ -70,6 +80,7 @@ def plot_task5_task6(
     threshold_results_json: Path,
     output_figure: Path,
 ) -> None:
+    """Plot Task 1 points together with Task 3 lines and weight vectors."""
     records = load_dataset(dataset_csv)
     solutions = load_threshold_solutions(threshold_results_json)
 
@@ -105,6 +116,7 @@ def plot_task5_task6(
         label="Klase 1",
     )
 
+    # pasakau vektoriu ilgi
     vector_scale = choose_vector_scale(solutions, x_limits, y_limits)
 
     for color, solution in zip(colors, solutions):
@@ -118,6 +130,7 @@ def plot_task5_task6(
             label=f"Skyrimo tiese #{solution.index}",
         )
 
+        # svoriu vektorius statmenas, nes yra normale
         start_point = closest_point_on_line_to_origin(p)
         weight_vector = np.array([p.w1, p.w2], dtype=float)
         norm = float(np.linalg.norm(weight_vector))
@@ -146,6 +159,7 @@ def plot_task5_task6(
     plt.xlim(*x_limits)
     plt.ylim(*y_limits)
     plt.grid(True, linestyle="--", alpha=0.4)
+    # suivienodinu asiu masteli
     plt.axis("equal")
     plt.legend(loc="best", fontsize=9)
     plt.tight_layout()
@@ -156,6 +170,7 @@ def plot_task5_task6(
 
 
 def main() -> None:
+    """Load default inputs and generate the combined Tasks 5-6 visualization figure."""
     lab_root = project_lab_root(Path(__file__))
     dataset_csv = lab_root / "data" / "task1_points.csv"
     threshold_results_json = lab_root / "data" / "task3_threshold_search_results.json"

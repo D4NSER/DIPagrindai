@@ -1,4 +1,6 @@
-﻿from __future__ import annotations
+"""Generate a linearly separable 2D dataset for Task 1 and save plots and metadata."""
+
+from __future__ import annotations
 
 import csv
 import json
@@ -9,15 +11,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+# nurodau tasku skaiciu
 POINTS_PER_CLASS = 15
 RANDOM_SEED = 42
 SAMPLING_BOUNDS = (-10.0, 10.0)
 SEPARATION_MARGIN = 1.25
+# apsauga nuo infinite loop
 MAX_SAMPLING_ATTEMPTS = 1000
 
 
 @dataclass(frozen=True)
 class DatasetPoint:
+    """One generated 2D point with its assigned class label."""
+
     x1: float
     x2: float
     label: int
@@ -25,14 +31,18 @@ class DatasetPoint:
 
 @dataclass(frozen=True)
 class SeparatingHyperplane:
+    """Separating line parameters and helper methods used during data generation."""
+
     weights: np.ndarray
     bias: float
     margin: float
 
     def score(self, point: np.ndarray) -> float:
+        """Compute the separator score for a candidate point."""
         return float(np.dot(self.weights, point) + self.bias)
 
     def classify_with_margin(self, point: np.ndarray) -> int | None:
+        """Assign class only if the point lies outside the margin band."""
         score = self.score(point)
         if score >= self.margin:
             return 1
@@ -42,16 +52,20 @@ class SeparatingHyperplane:
 
 
 def project_root() -> Path:
+    """Return the `lab1` project directory for writing generated outputs."""
     return Path(__file__).resolve().parents[1]
 
 
 def build_random_separator(rng: np.random.Generator) -> SeparatingHyperplane:
+    """Create a random separating line used to generate linearly separable classes."""
     raw_weights = rng.normal(loc=0.0, scale=1.0, size=2)
     norm = np.linalg.norm(raw_weights)
+    # apsaugau nuo (0;0)
     while norm == 0.0:
         raw_weights = rng.normal(loc=0.0, scale=1.0, size=2)
         norm = np.linalg.norm(raw_weights)
 
+    # normalizuoju duomenis del margin anomaliju
     weights = raw_weights / norm
     bias = float(rng.uniform(-2.5, 2.5))
     return SeparatingHyperplane(weights=weights, bias=bias, margin=SEPARATION_MARGIN)
@@ -63,15 +77,18 @@ def sample_linearly_separable_points(
     points_per_class: int,
     bounds: tuple[float, float],
 ) -> list[DatasetPoint]:
+    """Generate balanced class points that satisfy separator and margin constraints."""
     lower, upper = bounds
     class_counts = {0: 0, 1: 0}
     sampled_points: list[DatasetPoint] = []
 
+    # generuoju taskus ir atrenku tik atitinkancius margin salyga
     for _ in range(MAX_SAMPLING_ATTEMPTS):
         if all(count >= points_per_class for count in class_counts.values()):
             break
 
         candidate = rng.uniform(lower, upper, size=2)
+        # label = None taskas viduje margin intervalo
         label = separator.classify_with_margin(candidate)
         if label is None or class_counts[label] >= points_per_class:
             continue
@@ -92,6 +109,8 @@ def validate_linear_separability(
     points: list[DatasetPoint],
     separator: SeparatingHyperplane,
 ) -> None:
+    """Verify that every generated point matches the separator-based class assignment."""
+    # quality check, kad tikrai geri duomenys
     for point in points:
         point_vector = np.array([point.x1, point.x2], dtype=float)
         predicted_label = separator.classify_with_margin(point_vector)
@@ -102,6 +121,7 @@ def validate_linear_separability(
 
 
 def save_points_to_csv(points: list[DatasetPoint], destination: Path) -> None:
+    """Save generated dataset points to CSV for later tasks."""
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", newline="", encoding="utf-8") as csv_file:
         writer = csv.writer(csv_file)
@@ -116,6 +136,7 @@ def save_generation_metadata(
     seed: int,
     bounds: tuple[float, float],
 ) -> None:
+    """Save generation parameters and separator values to metadata JSON."""
     payload = {
         "seed": seed,
         "sampling_bounds": [bounds[0], bounds[1]],
@@ -131,8 +152,10 @@ def save_generation_metadata(
 
 
 def plot_points(points: list[DatasetPoint], destination: Path) -> None:
+    """Plot generated points in the XY plane and save the figure."""
     destination.parent.mkdir(parents=True, exist_ok=True)
 
+    # atskiriu taskus spalvom ir figurom
     class_zero = [p for p in points if p.label == 0]
     class_one = [p for p in points if p.label == 1]
 
@@ -169,6 +192,8 @@ def plot_points(points: list[DatasetPoint], destination: Path) -> None:
 
 
 def main() -> None:
+    """Run the full Task 1 data generation pipeline and save all outputs."""
+    # fiksuoju seed, kad galeciau atkurti duomenis
     rng = np.random.default_rng(RANDOM_SEED)
     separator = build_random_separator(rng)
     points = sample_linearly_separable_points(

@@ -1,4 +1,6 @@
-﻿from __future__ import annotations
+"""Run random parameter search for Task 4 using sigmoid activation."""
+
+from __future__ import annotations
 
 from pathlib import Path
 
@@ -11,11 +13,14 @@ from random_parameter_search import (
 
 
 def main() -> None:
+    """Run Task 4 random search with sigmoid activation and save three valid solutions."""
+    # tas pats, kas buvo su slenkstine
     lab_root = project_lab_root(Path(__file__))
     dataset_path = lab_root / "data" / "task1_points.csv"
     output_path = lab_root / "data" / "task4_sigmoid_search_results.json"
 
     records = load_dataset(dataset_path)
+    # viskas tas pats, kaip slenkstinej, tik keiciu activation ir seed'a
     config = SearchConfig(
         activation=ActivationType.SIGMOID,
         weight_bias_min=-10.0,
