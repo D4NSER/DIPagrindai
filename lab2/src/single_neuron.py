@@ -8,9 +8,6 @@ import time
 import numpy as np
 
 
-EPSILON = 1e-12
-
-
 @dataclass(frozen=True)
 class TrainingResult:
     """Final neuron parameters and collected metrics."""
@@ -40,15 +37,16 @@ def predict_proba(features: np.ndarray, weights: np.ndarray, bias: float) -> np.
     return sigmoid(features @ weights + bias)
 
 
-def predict_classes(features: np.ndarray, weights: np.ndarray, bias: float) -> np.ndarray:
+def predict_classes(
+    features: np.ndarray, weights: np.ndarray, bias: float
+) -> np.ndarray:
     """Round sigmoid outputs to 0 or 1."""
     return np.rint(predict_proba(features, weights, bias)).astype(int)
 
 
-def binary_cross_entropy(labels: np.ndarray, probabilities: np.ndarray) -> float:
-    """Compute average binary cross-entropy."""
-    p = np.clip(probabilities, EPSILON, 1.0 - EPSILON)
-    return float(-np.mean(labels * np.log(p) + (1.0 - labels) * np.log(1.0 - p)))
+def mean_squared_error(labels: np.ndarray, probabilities: np.ndarray) -> float:
+    """Compute 0.5 * mean squared error."""
+    return float(0.5 * np.mean((labels - probabilities) ** 2))
 
 
 def accuracy(labels: np.ndarray, predictions: np.ndarray) -> float:
@@ -56,11 +54,13 @@ def accuracy(labels: np.ndarray, predictions: np.ndarray) -> float:
     return float(np.mean(labels == predictions))
 
 
-def evaluate(features: np.ndarray, labels: np.ndarray, weights: np.ndarray, bias: float) -> tuple[float, float]:
+def evaluate(
+    features: np.ndarray, labels: np.ndarray, weights: np.ndarray, bias: float
+) -> tuple[float, float]:
     """Return loss and accuracy for a dataset."""
     probabilities = predict_proba(features, weights, bias)
     predictions = np.rint(probabilities).astype(int)
-    return binary_cross_entropy(labels, probabilities), accuracy(labels, predictions)
+    return mean_squared_error(labels, probabilities), accuracy(labels, predictions)
 
 
 def train_sigmoid_neuron(
@@ -96,18 +96,20 @@ def train_sigmoid_neuron(
     for epoch_index in range(epochs):
         if method == "batch":
             probabilities = predict_proba(train_x, weights, bias)
-            errors = probabilities - train_y
-            weights -= learning_rate * (train_x.T @ errors) / len(train_x)
-            bias -= learning_rate * float(np.mean(errors))
+            delta = (probabilities - train_y) * probabilities * (1.0 - probabilities)
+            weights -= learning_rate * (train_x.T @ delta) / len(train_x)
+            bias -= learning_rate * float(np.mean(delta))
         else:
             order = rng.permutation(len(train_x))
             for index in order:
                 row = train_x[index]
                 target = train_y[index]
                 probability = float(sigmoid(np.array([row @ weights + bias]))[0])
-                error = probability - float(target)
-                weights -= learning_rate * error * row
-                bias -= learning_rate * error
+                delta = (
+                    (probability - float(target)) * probability * (1.0 - probability)
+                )
+                weights -= learning_rate * delta * row
+                bias -= learning_rate * delta
 
         train_loss, train_accuracy = evaluate(train_x, train_y, weights, bias)
         validation_loss, validation_accuracy = evaluate(
@@ -118,12 +120,9 @@ def train_sigmoid_neuron(
         train_accuracy_history.append(train_accuracy)
         validation_accuracy_history.append(validation_accuracy)
 
-        if (
-            validation_accuracy > best_validation_accuracy
-            or (
-                validation_accuracy == best_validation_accuracy
-                and validation_loss < best_validation_loss
-            )
+        if validation_accuracy > best_validation_accuracy or (
+            validation_accuracy == best_validation_accuracy
+            and validation_loss < best_validation_loss
         ):
             best_weights = weights.copy()
             best_bias = float(bias)

@@ -35,5 +35,7 @@
     "train": 546,
     "validation": 68,
     "test": 69
-  }
+  },
+  "download_url": "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data",
+  "downloaded_in_this_run": false
 }
