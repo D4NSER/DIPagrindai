@@ -1,0 +1,39 @@
+{
+  "source_file": "C:\\Users\\pedse\\Desktop\\DIPagrindai\\lab2\\data\\raw\\breast-cancer-wisconsin.data",
+  "seed": 2026,
+  "raw_row_count": 699,
+  "clean_row_count": 683,
+  "feature_count": 9,
+  "removed_missing_rows": 16,
+  "dropped_columns": [
+    "sample_code_number"
+  ],
+  "label_mapping": {
+    "2": 0,
+    "4": 1
+  },
+  "raw_class_counts": {
+    "2": 458,
+    "4": 241
+  },
+  "clean_class_counts": {
+    "0": 444,
+    "1": 239
+  },
+  "feature_names": [
+    "clump_thickness",
+    "uniformity_of_cell_size",
+    "uniformity_of_cell_shape",
+    "marginal_adhesion",
+    "single_epithelial_cell_size",
+    "bare_nuclei",
+    "bland_chromatin",
+    "normal_nucleoli",
+    "mitoses"
+  ],
+  "default_split_sizes": {
+    "train": 546,
+    "validation": 68,
+    "test": 69
+  }
+}
