@@ -1,3 +1,5 @@
 .venv
 lab1/report/*.md
 lab1/src/__pycache__/
+__pycache__/
+*.pyc

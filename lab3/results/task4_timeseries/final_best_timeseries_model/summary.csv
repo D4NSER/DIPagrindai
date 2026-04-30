@@ -1,0 +1,16 @@
+field,value
+run_name,batch_norm_on
+optimizer,adam
+learning_rate,0.001
+conv_channels,"[16, 32]"
+dense_units,128
+dropout_rate,0.0
+use_batch_norm,True
+activation_name,relu
+best_epoch,9
+best_train_accuracy,0.99250000
+best_train_loss,0.13186596
+best_validation_accuracy,0.92666667
+best_validation_loss,0.35714931
+test_accuracy,0.90000000
+test_loss,0.37615382
