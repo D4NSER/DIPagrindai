@@ -5,7 +5,7 @@ index,subject,rep,predicted_label,predicted_class,true_label,true_class
 5,s005,43,3,s005,3,s005
 28,s007,35,4,s007,4,s007
 13,s008,1,0,s002,5,s008
-2,s010,3,16,s021,6,s010
+2,s010,3,10,s015,6,s010
 54,s011,30,7,s011,7,s011
 10,s012,16,8,s012,8,s012
 1,s013,18,9,s013,9,s013
@@ -27,5 +27,5 @@ index,subject,rep,predicted_label,predicted_class,true_label,true_class
 16,s031,21,25,s031,25,s031
 46,s032,14,26,s032,26,s032
 51,s033,46,27,s033,27,s033
-15,s034,2,0,s002,28,s034
+15,s034,2,28,s034,28,s034
 7,s035,43,29,s035,29,s035

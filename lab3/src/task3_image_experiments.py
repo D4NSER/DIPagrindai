@@ -258,6 +258,8 @@ def train_run(
         "learning_rate": learning_rate,
         "epochs": epochs,
         "best_epoch": best_epoch,
+        "best_epoch_train_accuracy": history["train_accuracy"][best_epoch - 1],
+        "best_epoch_train_loss": history["train_loss"][best_epoch - 1],
         "best_validation_accuracy": best_validation_accuracy,
         "best_validation_loss": best_validation_loss,
         "best_train_accuracy": max(history["train_accuracy"]),
@@ -328,17 +330,46 @@ def plot_study_summary(destination: Path, title: str, rows: list[dict[str, objec
     ensure_directory(destination.parent)
     labels = [str(row["run_name"]) for row in rows]
     x_positions = list(range(len(labels)))
+    bar_width = 0.38
     figure, axes = plt.subplots(1, 2, figsize=(12, 4.5))
-    axes[0].bar(x_positions, [row["best_validation_accuracy"] for row in rows], color="#2c7fb8")
-    axes[0].set_title("Best validation accuracy")
+    axes[0].bar(
+        [x - bar_width / 2 for x in x_positions],
+        [row["best_train_accuracy"] for row in rows],
+        width=bar_width,
+        label="Train",
+        color="#74a9cf",
+    )
+    axes[0].bar(
+        [x + bar_width / 2 for x in x_positions],
+        [row["best_validation_accuracy"] for row in rows],
+        width=bar_width,
+        label="Validation",
+        color="#2c7fb8",
+    )
+    axes[0].set_title("Best accuracy")
     axes[0].set_ylabel("Accuracy")
     axes[0].set_xticks(x_positions, labels, rotation=20)
     axes[0].grid(True, axis="y", linestyle="--", alpha=0.4)
-    axes[1].bar(x_positions, [row["best_validation_loss"] for row in rows], color="#f03b20")
-    axes[1].set_title("Best validation loss")
+    axes[0].legend()
+    axes[1].bar(
+        [x - bar_width / 2 for x in x_positions],
+        [row["best_train_loss"] for row in rows],
+        width=bar_width,
+        label="Train",
+        color="#fcae91",
+    )
+    axes[1].bar(
+        [x + bar_width / 2 for x in x_positions],
+        [row["best_validation_loss"] for row in rows],
+        width=bar_width,
+        label="Validation",
+        color="#f03b20",
+    )
+    axes[1].set_title("Best loss")
     axes[1].set_ylabel("Loss")
     axes[1].set_xticks(x_positions, labels, rotation=20)
     axes[1].grid(True, axis="y", linestyle="--", alpha=0.4)
+    axes[1].legend()
     figure.suptitle(title)
     figure.tight_layout()
     figure.savefig(destination, dpi=200)
@@ -350,6 +381,8 @@ def save_summary_csv(destination: Path, rows: list[dict[str, object]], include_t
     columns = [
         "run_name",
         "best_epoch",
+        "best_epoch_train_accuracy",
+        "best_epoch_train_loss",
         "best_validation_accuracy",
         "best_validation_loss",
         "best_train_accuracy",
@@ -369,6 +402,8 @@ def save_summary_csv(destination: Path, rows: list[dict[str, object]], include_t
             values = [
                 row["run_name"],
                 row["best_epoch"],
+                f"{row['best_epoch_train_accuracy']:.8f}",
+                f"{row['best_epoch_train_loss']:.8f}",
                 f"{row['best_validation_accuracy']:.8f}",
                 f"{row['best_validation_loss']:.8f}",
                 f"{row['best_train_accuracy']:.8f}",
@@ -467,6 +502,8 @@ def save_best_run_outputs(results_dir: Path, best_run: dict[str, object]) -> Non
         writer.writerow(["use_batch_norm", best_run["model_config"]["use_batch_norm"]])
         writer.writerow(["activation_name", best_run["model_config"]["activation_name"]])
         writer.writerow(["best_epoch", best_run["best_epoch"]])
+        writer.writerow(["best_epoch_train_accuracy", f"{best_run['best_epoch_train_accuracy']:.8f}"])
+        writer.writerow(["best_epoch_train_loss", f"{best_run['best_epoch_train_loss']:.8f}"])
         writer.writerow(["best_train_accuracy", f"{best_run['best_train_accuracy']:.8f}"])
         writer.writerow(["best_train_loss", f"{best_run['best_train_loss']:.8f}"])
         writer.writerow(["best_validation_accuracy", f"{best_run['best_validation_accuracy']:.8f}"])

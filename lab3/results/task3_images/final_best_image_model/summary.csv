@@ -1,16 +1,18 @@
 field,value
-run_name,deeper
+run_name,batch_norm_on
 optimizer,adam
 learning_rate,0.001
 conv_channels,"[16, 32, 64]"
 dense_units,128
 dropout_rate,0.0
-use_batch_norm,False
+use_batch_norm,True
 activation_name,relu
-best_epoch,6
-best_train_accuracy,0.99714286
-best_train_loss,0.01367661
+best_epoch,2
+best_epoch_train_accuracy,0.99028571
+best_epoch_train_loss,0.05513204
+best_train_accuracy,0.99600000
+best_train_loss,0.01844419
 best_validation_accuracy,0.99086758
-best_validation_loss,0.03877423
-test_accuracy,0.97716895
-test_loss,0.07769466
+best_validation_loss,0.04313161
+test_accuracy,0.98630137
+test_loss,0.03935471
